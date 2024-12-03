@@ -102,3 +102,185 @@ use 'ctrl' '-' to zoom out
 %:p # % converts :p to full path of current file
 :h  # to get rid of the file name in the path and get the head of the path
 /otherfile # noe you can put otherfile to open
+
+# open new file
+:e filename
+
+# learn `lua`
+https://learnxinyminutes.com/docs/lua
+
+# Neotree : the sidebar with the filesystem tree
+:Neotree <path of file to open>
+:Neotree <TAB> # to see options
+- Then press `a` to create a directory ending with `/` or a file (popup will open)
+
+
+# LUA
+
+## Comment:
+```lua
+`--` : single line comment
+`--[[ ]]`: multiline comment
+```
+
+## variables
+```lua
+- local keyword for local variables
+local variable = <put number>
+- '' or "" for string: 
+local word = "sentence not word"
+- `[[ ]]` for multiline string:
+[[ a mutiline string
+ for my docstring for example or prompt
+ ]]
+```
+
+- boolean:
+```lua
+local variable, othervar = true, false
+- null values
+local nulvar = `nil`
+```
+
+## Functions
+```lua
+- funcion + name + body + end
+local function <name of function>(parametervar)
+  print("this is a parameter: ", parametervar)
+end
+- OR variable equal to funciton
+local varfunc = function(paramvar)
+  -- i am comment ting inside the function just one line
+  print("parameter passed in func: ", parmvar)
+end
+# `calling` function with only one argument which is a string
+- function with only one argument which is a string can be called without parenthesis (works for literal strings only), like:
+local func_one_string_arg_only = function(string_argument)
+  return string_argument .. " - Yoooooowwww!"
+end
+local sakura_house = func_one_string_arg_only "finger in orange juice" -> finger in orange juice - Yoooooowwww!
+- can call function with map the same (literal table):
+local checking_1_or_2 = function(any_map)
+  if any_map.one == nil then
+    any_map.one = "n'importe quoi"
+  end
+  print(any_map.one, any_map.two)
+end
+checking_1_or_2 { one = 1, two = 2} -> 1, 2
+checking_1_or_2 { two = 2222} -> n'importe quoi, 2222 -- we didn't pass in key `one` so the key have been set in the function
+
+# functions syntaxe sugar
+- using `:` to replace `self` and dot `.` notation
+local my_list = {}
+funciton my_list.method_func(self, ... ) end
+function my_list:method_fuc( ... ) end
+```
+
+## dictionary and list to store stuff (those are tables in lua)
+```lua
+# List between: `{` and `}`
+local mylist = { "junko", true, function() print("manga kissa shibuya"), 109 }
+mylist[1] -> junko (so notice first value is not 0 index but 1)
+
+# map (dictionary) betweem: `{` and `}` but `=` sign between key/value pairs
+local dictionary = {
+  boolean_var = false,
+  ["a sentence as key"] = "really!?",
+  [function() end] = "even function as key?! WOW!",
+}
+dictionary.boolean -> false
+dictionary["a sentence as key"] -> "really!?"
+dictionary[fucntion end] -> returns nothing because those are 2 different lua functions so not pointing to the same function so it won't work!
+```
+
+# for loop
+```lua
+local my_list = { "creditizens", "toyko", 2024 }
+[[ here `#` is the length operator (so like Python for index in len(my_list))
+ and doesn't work for maps but for tables only (list)
+]]
+ -- index is start, # is stop
+for index = 1, #my_list do
+  print(index, my_list[index])
+end
+
+# OR use `ipairs` (index pairs or integer pairs) for tables (list)
+for index, value in ipairs(my_list) do
+  print(index, value)
+end
+
+# for maps use `in pairs`
+local my_map  = { "pen" = "JR station", "paper" = "phone number" }
+for key, value in paris(my_map) do
+  print(key, value)
+end
+```
+
+# `if` conditionals
+```lua
+# if -> then -> else (or else if)
+local function starbucks(coffee_type)
+  -- this is like saying `if true`
+  if coffee_type then
+    print("You will get a discount")
+  else
+    print("we don't have this coffee here")
+  end
+end
+# when we callit only `nil` and `false` are considered false
+starbucks("junko shibuya")  or starbucks(1) or starbucks(true) -> You will get a discount
+starbucks() or starbucks(false) -> we don't have this coffee here
+```
+
+# modules
+```lua
+-- module_junko.lua
+local my_module = {}
+my_module.my_function_named_109 = function() print("Junko is shopping in 109 the whole afternoon.") end
+return my_module
+# import module (so here we import the mudle made just before which is in another file)
+-- ginza_store.lua
+local module_junko = require('module_junko')
+module_junko.my_function_names_109()
+```
+
+# unpacking objects vars
+```lua
+local var_func_param_packed = funciton( ... ) -- has some parameters with commas (param1, param2...)
+  local argument_vars = { ... }
+  for index, value in ipairs({ ... }) do print(index, value) end
+  return unpack(argument_vars)
+end
+```
+
+# meta tables like dunder method (__repr__)in Python (change behavior of table) or like rust trait implementation
+```lua
+local super_table = {}
+super_table.__add = function(left_table, right_table)
+  return setmetatable({
+    -- here we define the rule in how tables should be added up.
+    --  here we are using the same index from both tables to be added and summed up in the `super_table` 
+    left[1] + right[1],
+    left[2] + right[2],
+    left[3] + right[3],
+  }, super_table)
+end
+
+local table1 = setmetatble({ 0, 1, 2}, super_table)
+local table2 = setmetatble({ 10, 9, 8}, super_table)
+local table3 = table1 + table2
+tbale3 -> { 10, 10, 10, 
+  <metatable> = { 
+    __add = <function 1>
+  }
+}
+```
+
+# keymaps to set vim keys
+```lua
+vim.keymap.set("n", "what you want to use as key", "the command that will be actioned when doing that key")
+eg.:
+vim.keymap.set("n", "<space><space>x", "<cmd>source %<CR>")
+# need to chekc what is lhs, rhs..wakaranai!
+use `:lua vim` to search and have access to doc or `:lua vim.<function name>` or `:help <name of function>`
+```
